@@ -1,0 +1,416 @@
+! Read AMSU-A reprocessed data
+! Isaac Moradi Isaac.Moradi@nasa.gov
+! June 5, 2017
+! This program reads AMSU-A NetCDF files for both sounding and window channels
+! and merge them into a single database
+
+
+MODULE Read_Data
+  USE NetCDF
+  USE datetime_module,ONLY:datetime, timedelta
+  
+  IMPLICIT NONE
+CONTAINS
+
+SUBROUTINE AMSUA_4CHAN( fname1_netcdf,   &
+                      nobs,           &
+                      nfov,           &
+                      nchan,          &
+                      year,           &
+                      month,          &
+                      day,            &
+                      hour,           &
+                      minute,         &
+                      second,         &
+                      !lat,            &
+                      !lon,            & 
+                      !eia,            &
+                      fov,            &                      
+                      Tb               )
+
+  CHARACTER(LEN=*), INTENT(IN) :: fname1_netcdf
+  INTEGER, INTENT(OUT) :: nobs, nfov, nchan
+  REAL(8), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: year, month, day, hour, minute, second
+  !REAL(8), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: lat, lon, eia
+  REAL(8), ALLOCATABLE, INTENT(OUT) :: tb(:,:), fov(:)
+
+  REAL(8), ALLOCATABLE :: tmp_var(:,:), tmp_var1(:,:), date_time(:,:,:), fov_sample(:)
+  INTEGER(KIND=4) :: ncid, grpid, dimid, varid, ichan
+  INTEGER(KIND=4) :: nscan, iscan, i
+  CHARACTER(LEN=*), PARAMETER :: date0 = "1998-01-01"
+  CHARACTER(LEN=100) :: dimname
+  CHARACTER(LEN=300) :: datestr
+  CHARACTER(LEN=30) :: date2 = ""
+  INTEGER(8) ::  jd0
+  INTEGER(8) :: endsec
+  TYPE(datetime)  :: dt
+  TYPE(timedelta) :: deltat
+  INTEGER :: channels(4) = (/23, 31, 50, 89/)  
+
+   nchan = 4
+   print*, 'Reading NetCDF ', fname1_netcdf
+
+   call check(nf90_open(fname1_netcdf, NF90_NOWRITE, ncid))
+   ! Inquire dimensions
+   call check(nf90_inq_dimid(ncid, "nscan", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nscan))
+   call check(nf90_inq_dimid(ncid, "npixel", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nfov))
+   call check(nf90_inq_dimid(ncid, "nchan", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nchan))
+   
+   ! Allocate Variables
+   nobs = nfov * nscan
+   ALLOCATE(year(nobs), month(nobs), day(nobs), fov_sample(nfov), &
+            hour(nobs), minute(nobs), second(nobs), fov(nobs))
+   !ALLOCATE(lat(nobs), lon(nobs), eia(nobs))
+   ALLOCATE(tb(nobs, nchan), tmp_var(nfov, nscan), tmp_var1(nfov, nscan), date_time(6,nfov,nscan))
+
+   ! calculate fov number
+   fov_sample = (/(i, i=1,nfov, 1)/)
+
+   ! Read data
+   call check( nf90_inq_ncid(ncid, "Geolocation_Time_Fields", grpid))
+   !call check( nf90_inq_varid(grpid, "latitude", varid))
+   !call check( nf90_get_var(grpid, varid, tmp_var))
+   !lat =   RESHAPE(tmp_var, (/nobs/))
+
+   !call check( nf90_inq_varid(grpid, "longitude", varid))
+   !call check( nf90_get_var(grpid, varid, tmp_var))
+   !lon =   RESHAPE(tmp_var, (/nobs/))
+
+   ! generate FOV info
+   DO iscan=1,nscan
+      tmp_var(:, iscan) = fov_sample
+   ENDDO
+   fov =   RESHAPE(tmp_var, (/nobs/))
+
+   call check( nf90_inq_varid(grpid, "scan_time_since98", varid)) 
+   call check( nf90_get_var(grpid, varid, tmp_var1(1,:)))
+
+   ! endJD = end_time in second - 5 minutes
+   endsec = maxval(tmp_var1) - 5 * 60
+   DO iscan=1,nscan
+       dt = datetime(1998,1,1,0,0,0,0)
+       !CALL dt%addSeconds(INT(tmp_var1(1, iscan)))
+       deltat = timedelta(seconds = (INT(tmp_var1(1, iscan))))
+       dt = dt + deltat
+
+       date_time(1,:,iscan) = REAL(dt%getyear())
+       date_time(2,:,iscan) = REAL(dt%getmonth())
+       date_time(3,:,iscan) = REAL(dt%getday())
+       date_time(4,:,iscan) = REAL(dt%gethour())
+       date_time(5,:,iscan) = REAL(dt%getminute())
+       date_time(6,:,iscan) = REAL(dt%getsecond())
+   ENDDO
+
+   year =  REAL(RESHAPE(date_time(1,:,:), (/nobs/)))
+   month =  REAL(RESHAPE(date_time(2,:,:), (/nobs/)))
+   day =  REAL(RESHAPE(date_time(3,:,:), (/nobs/)))
+   hour =  REAL(RESHAPE(date_time(4,:,:), (/nobs/)))
+   minute =  REAL(RESHAPE(date_time(5,:,:), (/nobs/)))
+   second =  REAL(RESHAPE(date_time(6,:,:), (/nobs/)))
+
+   call check( nf90_inq_ncid(ncid, "Data_Fields", grpid))
+   DO ichan=1,nchan
+      WRITE(dimname,"(A28,I2)") "fcdr_brightness_temperature_", channels(ichan)
+      call check( nf90_inq_varid(grpid, dimname, varid))
+      call check( nf90_get_var(grpid, varid, tmp_var))
+
+      WHERE (tmp_var1 .GT. endsec) tmp_var = -9999
+
+      tb(:,ichan) =   RESHAPE(tmp_var, (/nobs/)) 
+   END DO
+
+   ! Close NetCDF file
+   call check( nf90_close(ncid))
+   
+   ! set number of channels to correct value
+   nchan = 15
+
+END SUBROUTINE AMSUA_4CHAN
+
+SUBROUTINE AMSUA_AQUA_4CHAN( fname1_netcdf,   &
+                      fov,            &                      
+                      Tb               )
+
+  CHARACTER(LEN=*), INTENT(IN) :: fname1_netcdf
+  !REAL(8), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: lat, lon, eia
+  REAL(8), ALLOCATABLE, INTENT(OUT) :: tb(:,:), fov(:)
+
+  REAL(8), ALLOCATABLE :: tmp_var(:,:), tmp_var1(:,:), date_time(:,:,:), fov_sample(:)
+  INTEGER(KIND=4) :: ncid, grpid, dimid, varid, ichan, nchan, nfov, nobs
+  INTEGER(KIND=4) :: nscan, iscan, i
+  CHARACTER(LEN=*), PARAMETER :: date0 = "1998-01-01"
+  CHARACTER(LEN=100) :: dimname
+  CHARACTER(LEN=300) :: datestr
+  CHARACTER(LEN=30) :: date2 = ""
+  INTEGER(8) ::  jd0
+  INTEGER(8) :: endsec
+  TYPE(datetime)  :: dt
+  INTEGER :: channels(4) = (/23, 31, 50, 89/)  
+
+   nchan = 4
+   call check(nf90_open(fname1_netcdf, NF90_NOWRITE, ncid))
+   ! Inquire dimensions
+   call check(nf90_inq_dimid(ncid, "nscan", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nscan))
+   call check(nf90_inq_dimid(ncid, "npixel", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nfov))
+
+   
+   ! Allocate Variables
+   nobs = nfov * nscan
+   ALLOCATE(fov_sample(nfov), fov(nobs))
+
+   !ALLOCATE(lat(nobs), lon(nobs), eia(nobs))
+   ALLOCATE(tb(nobs, nchan), tmp_var(nfov, nscan), tmp_var1(nfov, nscan), date_time(6,nfov,nscan))
+
+   ! calculate fov number
+   fov_sample = (/(i, i=1,nfov, 1)/)
+
+   ! Read data
+
+   DO iscan=1,nscan
+      tmp_var(:, iscan) = fov_sample
+   ENDDO
+   fov =   RESHAPE(tmp_var, (/nobs/))
+
+   DO ichan=1,nchan          
+      WRITE(dimname,"(A28,I2)") "fcdr_brightness_temperature_", channels(ichan)
+      call check( nf90_inq_varid(ncid, dimname, varid))
+      call check( nf90_get_var(ncid, varid, tmp_var))
+
+      !WHERE (tmp_var1 .GT. endsec) tmp_var = -9999
+
+      tb(:,ichan) =   RESHAPE(tmp_var, (/nobs/)) 
+   END DO
+
+   ! Close NetCDF file
+   call check( nf90_close(ncid))
+   
+   ! set number of channels to correct value
+   nchan = 15
+
+END SUBROUTINE AMSUA_AQUA_4CHAN
+
+
+SUBROUTINE AMSUA_FCDR( fname_netcdf,   &
+		      nobs,           &
+		      nfov,           &
+		      nchan,          &
+                      year,           &
+ 		      month,          &
+                      day,            &
+                      hour,           &
+                      minute,         &
+                      second,         &
+                      lat,            &
+                      lon,            & 
+                      eia,            &
+                      fov,            &                      
+                      Tb               )
+
+  CHARACTER(LEN=*), INTENT(IN) :: fname_netcdf
+  INTEGER, INTENT(OUT) :: nobs, nfov, nchan
+  REAL(8), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: year, month, day, hour, minute, second
+  REAL(8), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: lat, lon, eia, fov
+  REAL(8), ALLOCATABLE, INTENT(OUT) :: tb(:,:)
+
+  REAL(8), ALLOCATABLE :: tmp_var(:,:), tmp_var1(:,:), date_time(:,:,:), fov_sample(:)
+  INTEGER(KIND=8), ALLOCATABLE :: tmp_var_int(:,:)
+  INTEGER(KIND=4) :: ncid, grpid, dimid, varid, ichan
+  INTEGER(KIND=4) :: nscan, iscan, i
+  CHARACTER(LEN=*), PARAMETER :: date0 = "1978-01-01"
+  CHARACTER(LEN=100) :: dimname
+  CHARACTER(LEN=300) :: datestr
+  CHARACTER(LEN=30) :: date2 = ""
+  INTEGER(8) ::  jd0
+  INTEGER(8) :: endsec
+  TYPE(datetime)  :: dt
+  TYPE(timedelta) :: deltat
+  
+
+  nchan = 15
+  print*, 'Reading NetCDF ', fname_netcdf
+  
+   call check(nf90_open(fname_netcdf, NF90_NOWRITE, ncid))
+
+   ! Inquire dimensions
+   call check(nf90_inq_dimid(ncid, "nscanDim", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nscan))
+   call check(nf90_inq_dimid(ncid, "pixelDim", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nfov))
+   !call check(nf90_inq_dimid(ncid, "nchan", dimid))
+   !call check(nf90_inquire_dimension(ncid, dimid, dimname, nchan))
+   
+   ! Allocate Variables
+   nobs = nfov * nscan
+   ALLOCATE(year(nobs), month(nobs), day(nobs), &
+            hour(nobs), minute(nobs), second(nobs), fov(nobs))
+   ALLOCATE(lat(nobs), lon(nobs), eia(nobs), fov_sample(nfov))
+   ALLOCATE(tb(nobs, nchan), tmp_var(nfov, nscan), tmp_var_int(nfov, nscan), tmp_var1(nfov, nscan), date_time(6,nfov,nscan))
+
+   ! calculate fov number
+   fov_sample = (/(i, i=1,nfov, 1)/)
+
+   ! Read data
+   !call check( nf90_inq_ncid(ncid, "Geolocation_Time_Fields", grpid))
+   call check( nf90_inq_varid(ncid, "latitude", varid))
+   call check( nf90_get_var(ncid, varid, tmp_var))
+   lat =   RESHAPE(tmp_var, (/nobs/))
+
+   call check( nf90_inq_varid(ncid, "longitude", varid))
+   call check( nf90_get_var(ncid, varid, tmp_var))
+   lon =   RESHAPE(tmp_var, (/nobs/))
+
+   ! generate FOV info
+   DO iscan=1,nscan
+      tmp_var(:, iscan) = fov_sample
+   ENDDO
+   fov =   RESHAPE(tmp_var, (/nobs/))
+
+   call check( nf90_inq_varid(ncid, "scan_time_since78", varid)) 
+   call check( nf90_get_var(ncid, varid, tmp_var1(1,:)))
+
+   ! endJD = end_time in second - 5 minutes
+   endsec = maxval(tmp_var1) - 5 * 60
+
+   DO iscan=1,nscan
+       dt = datetime(1978,1,1,0,0,0,0)
+       !CALL dt%addSeconds(INT(tmp_var1(1, iscan)))
+       deltat = timedelta(seconds = (INT(tmp_var1(1, iscan))))
+       dt = dt + deltat
+
+       date_time(1,:,iscan) = REAL(dt%getyear())
+       date_time(2,:,iscan) = REAL(dt%getmonth())
+       date_time(3,:,iscan) = REAL(dt%getday())
+       date_time(4,:,iscan) = REAL(dt%gethour())
+       date_time(5,:,iscan) = REAL(dt%getminute())
+       date_time(6,:,iscan) = REAL(dt%getsecond())
+   ENDDO
+
+   year =  REAL(RESHAPE(date_time(1,:,:), (/nobs/)))
+   month =  REAL(RESHAPE(date_time(2,:,:), (/nobs/)))
+   day =  REAL(RESHAPE(date_time(3,:,:), (/nobs/)))
+   hour =  REAL(RESHAPE(date_time(4,:,:), (/nobs/)))
+   minute =  REAL(RESHAPE(date_time(5,:,:), (/nobs/)))
+   second =  REAL(RESHAPE(date_time(6,:,:), (/nobs/)))
+
+   !call check( nf90_inq_ncid(ncid, "Data_Fields", grpid))
+   call check( nf90_inq_varid(ncid, "sensor_zenith_angle", varid))  ! Earth Incidence Angle
+   call check( nf90_get_var(ncid, varid, tmp_var))
+   eia =   ABS(RESHAPE(tmp_var, (/nobs/))) 
+
+   DO ichan=4,14
+      IF (ichan < 10) THEN
+      WRITE(dimname,"(A36,I1)") "fcdr_brightness_temperature_IMICA_ch", ichan
+      ELSE
+      WRITE(dimname,"(A36,I2)") "fcdr_brightness_temperature_IMICA_ch", ichan
+      ENDIF
+
+      !------------------- Read AMSU l1b for all cahnnels  ----------------
+      !IF (ichan < 10) THEN
+      !   WRITE(dimname,"(A34,I1)") "fcdr_brightness_temperature_OPR_ch", ichan
+      !ELSE
+      !   WRITE(dimname,"(A34,I2)") "fcdr_brightness_temperature_OPR_ch", ichan
+      !ENDIF
+      !------------------- Read AMSU CDR for channel 14 -------------------
+      !IF (ichan.EQ.14) THEN 
+      !    WRITE(dimname,"(A36,I2)") "fcdr_brightness_temperature_IMICA_ch", ichan
+      !ENDIF
+      !--------------------------------------------------------------------
+
+      call check( nf90_inq_varid(ncid, TRIM(dimname), varid))
+      call check( nf90_get_var(ncid, varid, tmp_var_int))
+      tmp_var = tmp_var_int / 100.0
+      WHERE (tmp_var1 .GT. endsec) tmp_var = -9999
+      tb(:,ichan) =   RESHAPE(tmp_var, (/nobs/)) 
+   END DO
+   
+   ! Close NetCDF file
+   call check( nf90_close(ncid))
+
+END SUBROUTINE AMSUA_FCDR
+
+SUBROUTINE Read_Level1b( fname_netcdf,   &
+		      nobs,           &
+		      nfov,           &
+		      nchan,          &
+                      year,           &
+ 		      month,          &
+                      day,            &
+                      hour,           &
+                      minute,         &
+                      second,         &
+                      lat,            &
+                      lon,            & 
+                      eia,            &
+                      fov,            &                      
+                      Tb               )
+
+  CHARACTER(LEN=*), INTENT(IN) :: fname_netcdf
+  INTEGER, INTENT(OUT) :: nobs, nfov, nchan
+  REAL(8), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: year, month, day, hour, minute, second
+  REAL(8), DIMENSION(:), ALLOCATABLE, INTENT(OUT) :: lat, lon, eia, fov
+  REAL(8), ALLOCATABLE, INTENT(OUT) :: tb(:,:)
+
+  REAL(8), ALLOCATABLE :: tmp_var(:,:,:)
+  INTEGER(KIND=4) :: ncid, dimid, varid
+  INTEGER(KIND=4) :: nscan
+  CHARACTER(LEN=100) :: dimname
+
+   call check(nf90_open(fname_netcdf, NF90_NOWRITE, ncid))
+
+   ! Inquire dimensions
+   call check(nf90_inq_dimid(ncid, "nscans", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nscan))
+   call check(nf90_inq_dimid(ncid, "nbps", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nfov))
+   call check(nf90_inq_dimid(ncid, "nchans", dimid))
+   call check(nf90_inquire_dimension(ncid, dimid, dimname, nchan))
+   
+   ! Allocate Variables
+   nobs = nfov * nscan
+   ALLOCATE(year(nobs), month(nobs), day(nobs), &
+            hour(nobs), minute(nobs), second(nobs), fov(nobs))
+   ALLOCATE(lat(nobs), lon(nobs), eia(nobs))
+   ALLOCATE(tb(nobs, nchan), tmp_var(nscan, nfov, nchan))
+
+   ! Read data
+   call check( nf90_inq_varid(ncid, "lat", varid))
+   call check( nf90_get_var(ncid, varid, tmp_var(:,:,1)))
+   lat =   RESHAPE(tmp_var(:,:,1), (/nobs/))
+
+   call check( nf90_inq_varid(ncid, "lon", varid))
+   call check( nf90_get_var(ncid, varid, tmp_var(:,:,1)))
+   lon =   RESHAPE(tmp_var(:,:,1), (/nobs/)) 
+
+   call check( nf90_inq_varid(ncid, "sza", varid))          ! Solar Zenith Angle
+   call check( nf90_get_var(ncid, varid, tmp_var(:,:,1)))
+   eia =   RESHAPE(tmp_var(:,:,1), (/nobs/))                 ! Not used
+
+   call check( nf90_inq_varid(ncid, "vza", varid))          ! Earth Incidence Angle
+   call check( nf90_get_var(ncid, varid, tmp_var(:,:,1)))
+   eia =   RESHAPE(tmp_var(:,:,1), (/nobs/)) 
+
+   call check( nf90_inq_varid(ncid, "bt", varid))
+   call check( nf90_get_var(ncid, varid, tmp_var))
+   tb =   RESHAPE(tmp_var, (/nobs, nchan/)) 
+
+   ! Close NetCDF file
+   call check( nf90_close(ncid))
+
+END SUBROUTINE Read_Level1b
+
+SUBROUTINE check(status)
+    integer, intent ( in) :: status
+
+    if(status /= nf90_noerr) then
+      print *, trim(nf90_strerror(status))
+      stop 2
+    end if
+END SUBROUTINE check
+
+
+END MODULE Read_Data

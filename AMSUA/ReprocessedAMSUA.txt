@@ -1,0 +1,79 @@
+Data-download and processing part
+
+1. The data for NOAA satellites as well as AQUA were obtained from: 
+
+Data for channels 4:15 are obtained from by ordering data: 
+
+https://www.ncdc.noaa.gov/has/HAS.FileAppRouter?datasetname=NSTAR_FCDR&subqueryby=STATION&applname=&outdest=FILE 
+
+The site above has data for AMSU-A from all satellites (including METOPs and AQUA). The data includes inter-calibrated data as well as NOAA CLASS data. I used the command to download the data: 
+
+#!/bin/csh 
+
+wget -r -H -nc -np -nH --cut-dirs=1 -e robots=off -l1
+'https://www1.ncdc.noaa.gov/pub/has/HAS<filenumber>/'
+
+2. Data for window channels: 1, 2, 3 and 15 were downloaded from: 
+
+https://www.ncdc.noaa.gov/has/HAS.FileAppRouter?datasetname=HYDROCDR&subqueryby=STATION&applname=&outdest=FILE 
+
+The data above only includes AMSU-A data from NOAA satellites only. Use the same command as above to download the data. 
+
+3. Required files and directories:
+
+Files:
+-fcdr2bufr.f90
+-Read_Data.f90
+-Write_Bufr_Module.f90
+
+Directories:
+-datetime-fortran
+-GEOSadas
+
+4. Compiling/Building the BUFR files: 
+
+First, compile GEOSadas to get the NCEP Libraries. Use the one on GitHub (which installs easily) but the main thing to remember is that once you do this, you need to be consistent. The environment used to build the NCEP Libraries are the ones you need to use for the utility.
+
+Build GEOSadas with:   
+
+ git clone git@github.com:GEOS-ESM/GEOSadas.git 
+ cd GEOSadas 
+ ./parallel_build.csh 
+
+when you are done, you'll have a build of GEOSadas. And let's call that
+directory ESMADIR, such that $ESMADIR/GEOSadas/install exists. 
+
+Next, clone another library (if it's not there) called datetime-fortran: 
+
+ git clone git@github.com:wavebitscientific/datetime-fortran.git 
+
+With all that, you should just need to: 
+
+ source $ESMADIR/GEOSadas/install/bin/g5_modules 
+
+Next, for safety's sake, edit the Makefile and have the ESMADIR line point to
+your ESMADIR, for example:
+ ESMADIR = /home/dao_ops/GEOSadas-5_29_5/GEOSadas
+
+Finally, the Makefile in the directory will make the datetime-fortran library for you. You should be able to run: 
+
+ make clean	 
+ make all 
+and things should build. 
+There may be quite a few warnings because that code is doing some non-standard Fortran stuff: 
+
+Write_Bufr_Module.f90(85): warning #7349: The use of real or double precision DO control variable has been deleted in Fortran 2008.   [DN] 
+ DO dn=min_datenum, max_datenum, 0.25 
+
+but it seemed to build.   
+
+5. Creating the reprocessed BUFR files:
+
+Download the input fies for specific daytes/times from the web.
+Arrange the input files from NOAA platforms in a path such as:
+~/example_data_airsamsua/noaa-15/2002/*(CICS)* and *(NESDIS)* 
+
+module load python/GEOSpyD/Ana2019.10_py3.7
+python3 fcdr2bufr.py yyyymmddhh
+
+lease note that the files are duplicated if they are run for different hh (00 06 12 and 18) for the same yyyymmdd. So please simply run the code once for hh=00 to create data for all four hh. 
