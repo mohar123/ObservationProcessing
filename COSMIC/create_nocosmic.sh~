@@ -1,0 +1,11 @@
+#!/bin/csh -X
+source /gpfsm/dnb31/mchattop/GEOSadas_avhrr_mods/GEOSadas/src/g5_modules
+foreach file (`ls gdas1.1204*gpsro.tm00.bufr_d`)
+   /gpfsm/dnb31/mchattop/GEOSadas_avhrr_mods/GEOSadas/Linux/bin/prepbykx.x -r ${file} -o nocsmic_${file}
+end
+
+exit
+
+
+
+

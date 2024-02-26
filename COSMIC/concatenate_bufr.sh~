@@ -1,0 +1,17 @@
+#!/bin/csh -X
+
+foreach mm (10 11 12)
+   foreach dd (01 02 03 04 05 06 07 08 09 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31)
+    #foreach dd (01)
+      foreach hh (00 06 12 18)
+          cat nocsmic_gdas1.15${mm}${dd}.t${hh}z.gpsro.tm00.bufr_d /gpfsm/dnb04/projects/p72/mchattop/COSMIC/level2/BUFR_Cp/2015/${mm}/bfrPrf_Cp_2015${mm}${dd}.${hh}z.bufr > gdas1_new.15${mm}${dd}.t${hh}z.gpsro.tm00.bufr_d
+
+      end
+   end
+end
+
+
+
+
+exit
+
