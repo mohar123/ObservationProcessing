@@ -1,0 +1,59 @@
+AVHRR processing 
+
+AVHRR data started getting assimilated from 7 February 2012 although AVHRR
+radiance data were available from late 1990. The instrument supplied radiance
+data from NOAA-15, NOAA-16, NOAA-17, NOAA_18, NOAA-19, Metop-A and Metop-B
+platforms (AM: N15, N17, MetOp-A, MetOp-B and PM: N16, N18, N19). 
+
+Although AVHRR data were used in the GEOS operational systems since 2012, it 
+was not included in MERRA-2. In order to use AVHRR data in the new reanalysis 
+system, the data need to be accessed and processed from NOAA CLASS data 
+system. Following section provides an overview of how to process the data for 
+NASA MERRA21C reanalysis ingestion:; 
+
+The processing scripts are found in : 
+
+Bufr code to convert AVHRR Binary files to BUFR can be found in: 
+
+Binary files are available from: https://www.aev.class.noaa.gov/saa/products/welcome;jsessionid=8062AD5B72C72BB6A7D2C5ADE96B5E94 
+
+http://www.nco.ncep.noaa.gov/pmb/codes/nwprod/obsproc_satingest.v3.4.*/sorc/bufr_tranavhrr.fd 
+
+ 
+
+The code to convert AVHRR files from NOAA-CLASS can be found below in:
+
+cd .../GEOSadas/src/Applications/GMAO_Etc/GMAObufr_util/
+
+
+A brief description of the process to convert AVHRR binary to BUFR can be found in : 
+
+GEOSadas/src/Applications/GMAO_Etc/GMAObufr_util/ChangeLog 
+
+Changes: 
+
+The files make_avhrr_bufr.py and config_avhrr.py are used in processing the binary AVHRR files. make_avhrr_bfr.py is modified to use full path of the codes and scripts. The following lines are added/modified to process data from metop-a and metop-b. 
+
+Look into the directory :  
+
+    if which_satellite == 'metopA': 
+
+        matches ='NSS.GHRR.M2.*D*.S*.E*' 
+
+        am_or_pm='AVCSAM' 
+
+        check_satid = 1 
+
+    if which_satellite == 'metopB': 
+
+        matches ='NSS.GHRR.M1.*D*.S*.E*' 
+
+        am_or_pm='AVCSAM' 
+
+        check_satid = 1         
+
+    if check_satid == 0: 
+
+        print 'Check satellite ID: N15, N16, N17, N18,  N19, MetOpA and MetOpB!' 
+
+Use the command : python make_avhrr_bufr.py to create bufr files of AVHRR. 
