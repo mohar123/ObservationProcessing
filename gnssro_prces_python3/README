@@ -1,0 +1,19 @@
+Using the Python3 for concatenation of multiple BUFR files into one for a
+single synoptic time:
+
+The script to process the files is:
+test_process_km_yy.sh
+
+and the important part of the script is :
+
+    ./cdaac2ncep.py ${date_dir} 6 km
+
+where "km" directory needs to be in the same path as the script ./test_process_km_yy.sh
+
+The BUFR files are store in 
+/discover/nobackup/projects/gmao/obsdev/mchattop/GPSROdata/python3/km/yyyy.dom/
+(day of the month)
+
+cdaac2ncep.py is symlinked to newpy3_cdaac2ncep.py
+
+

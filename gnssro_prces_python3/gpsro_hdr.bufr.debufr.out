@@ -1,0 +1,234 @@
+
+Found BUFR message #      1
+
+        Message length:         164
+      Section 0 length:           8
+          BUFR edition:           3
+
+      Section 1 length:          18
+          Master table:           0
+    Originating center:           7 (= U.S. National Weather Service, National Centres for Environmental Prediction (NCEP))
+ Originating subcenter:           3 (= NCEP Central Operations)
+ Update sequence numbr:           0
+    Section 2 present?: No
+         Data category:           3 (= Vertical soundings (satellite))
+     Local subcategory:          10 (= Radio occultation)
+ Internatl subcategory:          -1
+  Master table version:          13
+   Local table version:           0
+                  Year:        2022
+                 Month:          10
+                   Day:          29
+                  Hour:          18
+                Minute:           0
+                Second:          -1
+
+ Number of data subsets:           1
+     Data are observed?: Yes
+   Data are compressed?: No
+  Number of descriptors:           6
+        1: 063000
+        2: 361160
+        3: 102000
+        4: 031001
+        5: 206001
+        6: 063255
+
+BUFR message #      1 of type NC003010 and date 2022102918 contains      1 subsets:
+
+MESSAGE TYPE NC003010  
+
+001007  SAID                     MISSING  CODE TABLE                    SATELLITE IDENTIFIER                            
+002019  SIID                     MISSING  CODE TABLE                    SATELLITE INSTRUMENTS                           
+001033  OGCE                     MISSING  CODE TABLE                    IDENTIFICATION OF ORIGINATING/GENERATING CENTER 
+002172  PTAG                     MISSING  CODE TABLE                    PRODUCT TYPE FOR RETRIEVED ATMOSPHERIC GASES    
+025060  SWID                     MISSING  NUMERIC                       SOFTWARE IDENTIFICATION                         
+008021  TSIG                     MISSING  CODE TABLE                    TIME SIGNIFICANCE                               
+004001  YEAR                     MISSING  YEAR                          YEAR                                            
+004002  MNTH                     MISSING  MONTH                         MONTH                                           
+004003  DAYS                     MISSING  DAY                           DAY                                             
+004004  HOUR                     MISSING  HOUR                          HOUR                                            
+004005  MINU                     MISSING  MINUTE                        MINUTE                                          
+004006  SECO                     MISSING  SECOND                        SECOND                                          
+033039  QFRO                     MISSING  FLAG TABLE                    QUALITY FLAGS FOR RADIO OCCULTATION DATA        
+033007  PCCF                     MISSING  %                             PER CENT CONFIDENCE                             
+027031  PD00                     MISSING  M                             IN DIRECTION OF 0 DEG LONG, DISTANCE FROM EARTH'
+028031  PD90                     MISSING  M                             IN DIRECTION OF 90 DEG E, DISTANCE FROM EARTH'S 
+010031  PDNP                     MISSING  M                             IN DIR OF NORTH POLE, DISTANCE FROM THE EARTH'S 
+001041  PS00                     MISSING  M/S                           ABSOLUTE PLATFORM VELOCITY - FIRST COMPONENT    
+001042  PS90                     MISSING  M/S                           ABSOLUTE PLATFORM VELOCITY - SECOND COMPONENT   
+001043  PSNP                     MISSING  M/S                           ABSOLUTE PLATFORM VELOCITY - THIRD COMPONENT    
+002020  SCLF                     MISSING  CODE TABLE                    SATELLITE CLASSIFICATION                        
+001050  PTID                     MISSING  NUMERIC                       PLATFORM TRANSMITTER ID NUMBER                  
+027031  PD00                     MISSING  M                             IN DIRECTION OF 0 DEG LONG, DISTANCE FROM EARTH'
+028031  PD90                     MISSING  M                             IN DIRECTION OF 90 DEG E, DISTANCE FROM EARTH'S 
+010031  PDNP                     MISSING  M                             IN DIR OF NORTH POLE, DISTANCE FROM THE EARTH'S 
+001041  PS00                     MISSING  M/S                           ABSOLUTE PLATFORM VELOCITY - FIRST COMPONENT    
+001042  PS90                     MISSING  M/S                           ABSOLUTE PLATFORM VELOCITY - SECOND COMPONENT   
+001043  PSNP                     MISSING  M/S                           ABSOLUTE PLATFORM VELOCITY - THIRD COMPONENT    
+004016  TISE                     MISSING  SECOND                        TIME INCREMENT                                  
+005001  CLATH                    MISSING  DEGREES                       LATITUDE (HIGH ACCURACY)                        
+006001  CLONH                    MISSING  DEGREES                       LONGITUDE (HIGH ACCURACY)                       
+027031  PD00                     MISSING  M                             IN DIRECTION OF 0 DEG LONG, DISTANCE FROM EARTH'
+028031  PD90                     MISSING  M                             IN DIRECTION OF 90 DEG E, DISTANCE FROM EARTH'S 
+010031  PDNP                     MISSING  M                             IN DIR OF NORTH POLE, DISTANCE FROM THE EARTH'S 
+010035  ELRC                     MISSING  M                             EARTH'S LOC RADIUS OF CURVATURE                 
+005021  BEARAZ                   MISSING  DEGREES TRUE                  BEARING OR AZIMUTH                              
+010036  GEODU                    MISSING  M                             GEOID UNDULATION                                
+           (ROSEQ1)     0 REPLICATIONS
+           (ROSEQ3)     0 REPLICATIONS
+           (ROSEQ4)     0 REPLICATIONS
+008003  VSAT                     MISSING  CODE TABLE                    VERTICAL SIGNIFICANCE (SATELLITE OBSERVATIONS)  
+007009  GPHTST                   MISSING  GPM                           GEOPOTENTIAL HEIGHT                             
+010004  PRES                     MISSING  PASCALS                       PRESSURE                                        
+008023  FOST                     MISSING  CODE TABLE                    FIRST ORDER STATISTICS                          
+010004  PRES                     MISSING  PASCALS                       PRESSURE                                        
+008023  FOST                     MISSING  CODE TABLE                    FIRST ORDER STATISTICS                          
+033007  PCCF                     MISSING  %                             PER CENT CONFIDENCE                             
+
+ >>> END OF SUBSET <<< 
+
+
+End of BUFR message #      1
+
+------------------------------------------------------------------------------------------------------------------------
+
+Reached end of BUFR file; it contained a total of      1 messages and        1 subsets
+
+Here is the DX table that was generated:
+
+.------------------------------------------------------------------------------.
+| ------------   USER DEFINITIONS FOR TABLE-A TABLE-B TABLE D   -------------- |
+|------------------------------------------------------------------------------|
+| MNEMONIC | NUMBER | DESCRIPTION                                              |
+|----------|--------|----------------------------------------------------------|
+|          |        |                                                          |
+| NC003010 | A61160 | MTYP 003-010 GPS RADIO OCCULTN -CHAMP,COSMIC,GRACE,GRAS  |
+|          |        |                                                          |
+| YYMMDD   | 301011 | DATE -- YEAR, MONTH, DAY                                 |
+| HHMM     | 301012 | TIME -- HOUR, MINUTE                                     |
+| LTLONH   | 301021 | HIGH ACCURACY LATITUDE/LONGITUDE POSITION                |
+| LOCPLAT  | 304030 | LOCATION OF PLATFORM (SATELLITE) SEQUENCE                |
+| SPDPLAT  | 304031 | SPEED OF PLATFORM (SATELLITE) SEQUENCE                   |
+| SIIDSEQ  | 310022 | SATELLITE AND INSTRUMENT IDENTIFICATION SEQUENCE         |
+| ROSEQ1   | 352100 | RAOC PROFILE LOCATIONS SEQUENCE                          |
+| ROSEQ2   | 352101 | RAOC FREQ/IMPACT PARM/BENDING ANGLE SEQUENCE             |
+| ROSEQ3   | 352102 | RAOC HEIGHT/REFRACTIVITY SEQUENCE                        |
+| ROSEQ4   | 352103 | RAOC LEVEL-2 RETRIEVAL SEQUENCE                          |
+|          |        |                                                          |
+| SAID     | 001007 | SATELLITE IDENTIFIER                                     |
+| OGCE     | 001033 | IDENTIFICATION OF ORIGINATING/GENERATING CENTER          |
+| PS00     | 001041 | ABSOLUTE PLATFORM VELOCITY - FIRST COMPONENT             |
+| PS90     | 001042 | ABSOLUTE PLATFORM VELOCITY - SECOND COMPONENT            |
+| PSNP     | 001043 | ABSOLUTE PLATFORM VELOCITY - THIRD COMPONENT             |
+| PTID     | 001050 | PLATFORM TRANSMITTER ID NUMBER                           |
+| SIID     | 002019 | SATELLITE INSTRUMENTS                                    |
+| SCLF     | 002020 | SATELLITE CLASSIFICATION                                 |
+| MEFR     | 002121 | MEAN FREQUENCY                                           |
+| PTAG     | 002172 | PRODUCT TYPE FOR RETRIEVED ATMOSPHERIC GASES             |
+| YEAR     | 004001 | YEAR                                                     |
+| MNTH     | 004002 | MONTH                                                    |
+| DAYS     | 004003 | DAY                                                      |
+| HOUR     | 004004 | HOUR                                                     |
+| MINU     | 004005 | MINUTE                                                   |
+| SECO     | 004006 | SECOND                                                   |
+| TISE     | 004016 | TIME INCREMENT                                           |
+| CLATH    | 005001 | LATITUDE (HIGH ACCURACY)                                 |
+| BEARAZ   | 005021 | BEARING OR AZIMUTH                                       |
+| CLONH    | 006001 | LONGITUDE (HIGH ACCURACY)                                |
+| HEIT     | 007007 | HEIGHT                                                   |
+| GPHTST   | 007009 | GEOPOTENTIAL HEIGHT                                      |
+| IMPP     | 007040 | IMPACT PARAMETER                                         |
+| VSAT     | 008003 | VERTICAL SIGNIFICANCE (SATELLITE OBSERVATIONS)           |
+| TSIG     | 008021 | TIME SIGNIFICANCE                                        |
+| FOST     | 008023 | FIRST ORDER STATISTICS                                   |
+| PRES     | 010004 | PRESSURE                                                 |
+| PDNP     | 010031 | IN DIR OF NORTH POLE, DISTANCE FROM THE EARTH'S CENTER   |
+| ELRC     | 010035 | EARTH'S LOC RADIUS OF CURVATURE                          |
+| GEODU    | 010036 | GEOID UNDULATION                                         |
+| TMDBST   | 012001 | TEMPERATURE/DRY BULB TEMPERATURE                         |
+| SPFH     | 013001 | SPECIFIC HUMIDITY                                        |
+| ARFR     | 015036 | ATMOSPHERIC REFRACTIVITY                                 |
+| BNDA     | 015037 | BENDING ANGLE                                            |
+| SWID     | 025060 | SOFTWARE IDENTIFICATION                                  |
+| PD00     | 027031 | IN DIRECTION OF 0 DEG LONG, DISTANCE FROM EARTH'S CENTE  |
+| PD90     | 028031 | IN DIRECTION OF 90 DEG E, DISTANCE FROM EARTH'S CENTER   |
+| PCCF     | 033007 | PER CENT CONFIDENCE                                      |
+| QFRO     | 033039 | QUALITY FLAGS FOR RADIO OCCULTATION DATA                 |
+|          |        |                                                          |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SEQUENCE                                                          |
+|----------|-------------------------------------------------------------------|
+|          |                                                                   |
+| NC003010 | SIIDSEQ  SWID  TSIG  YYMMDD  HHMM  201138  202131  SECO  202000   |
+| NC003010 | 201000  QFRO  PCCF  LOCPLAT  SPDPLAT  SCLF  PTID  202127  LOCPLAT |
+| NC003010 | 202000  SPDPLAT  201133  202131  TISE  202000  201000  LTLONH     |
+| NC003010 | LOCPLAT  ELRC  BEARAZ  GEODU  (ROSEQ1)  (ROSEQ3)  (ROSEQ4)  VSAT  |
+| NC003010 | GPHTST  PRES  FOST  201120  PRES  201000  FOST  PCCF              |
+|          |                                                                   |
+| YYMMDD   | YEAR  MNTH  DAYS                                                  |
+|          |                                                                   |
+| HHMM     | HOUR  MINU                                                        |
+|          |                                                                   |
+| LTLONH   | CLATH  CLONH                                                      |
+|          |                                                                   |
+| LOCPLAT  | PD00  PD90  PDNP                                                  |
+|          |                                                                   |
+| SPDPLAT  | PS00  PS90  PSNP                                                  |
+|          |                                                                   |
+| SIIDSEQ  | SAID  SIID  OGCE  PTAG                                            |
+|          |                                                                   |
+| ROSEQ1   | LTLONH  BEARAZ  {ROSEQ2}  PCCF                                    |
+|          |                                                                   |
+| ROSEQ2   | MEFR  IMPP  BNDA  FOST  201125  BNDA  201000  FOST                |
+|          |                                                                   |
+| ROSEQ3   | HEIT  ARFR  FOST  201123  ARFR  201000  FOST  PCCF                |
+|          |                                                                   |
+| ROSEQ4   | GPHTST  PRES  TMDBST  SPFH  FOST  201120  PRES  201000  201122    |
+| ROSEQ4   | TMDBST  201000  201123  SPFH  201000  FOST  PCCF                  |
+|          |                                                                   |
+|------------------------------------------------------------------------------|
+| MNEMONIC | SCAL | REFERENCE   | BIT | UNITS                    |-------------|
+|----------|------|-------------|-----|--------------------------|-------------|
+|          |      |             |     |                          |-------------|
+| SAID     |    0 |           0 |  10 | CODE TABLE               |-------------|
+| OGCE     |    0 |           0 |   8 | CODE TABLE               |-------------|
+| PS00     |    5 | -1073741824 |  31 | M/S                      |-------------|
+| PS90     |    5 | -1073741824 |  31 | M/S                      |-------------|
+| PSNP     |    5 | -1073741824 |  31 | M/S                      |-------------|
+| PTID     |    0 |           0 |  17 | NUMERIC                  |-------------|
+| SIID     |    0 |           0 |  11 | CODE TABLE               |-------------|
+| SCLF     |    0 |           0 |   9 | CODE TABLE               |-------------|
+| MEFR     |   -8 |           0 |   7 | HERTZ                    |-------------|
+| PTAG     |    0 |           0 |   8 | CODE TABLE               |-------------|
+| YEAR     |    0 |           0 |  12 | YEAR                     |-------------|
+| MNTH     |    0 |           0 |   4 | MONTH                    |-------------|
+| DAYS     |    0 |           0 |   6 | DAY                      |-------------|
+| HOUR     |    0 |           0 |   5 | HOUR                     |-------------|
+| MINU     |    0 |           0 |   6 | MINUTE                   |-------------|
+| SECO     |    0 |           0 |   6 | SECOND                   |-------------|
+| TISE     |    0 |       -4096 |  13 | SECOND                   |-------------|
+| CLATH    |    5 |    -9000000 |  25 | DEGREES                  |-------------|
+| BEARAZ   |    2 |           0 |  16 | DEGREES TRUE             |-------------|
+| CLONH    |    5 |   -18000000 |  26 | DEGREES                  |-------------|
+| HEIT     |    0 |       -1000 |  17 | M                        |-------------|
+| GPHTST   |    0 |       -1000 |  17 | GPM                      |-------------|
+| IMPP     |    1 |    62000000 |  22 | M                        |-------------|
+| VSAT     |    0 |           0 |   6 | CODE TABLE               |-------------|
+| TSIG     |    0 |           0 |   5 | CODE TABLE               |-------------|
+| FOST     |    0 |           0 |   6 | CODE TABLE               |-------------|
+| PRES     |   -1 |           0 |  14 | PASCALS                  |-------------|
+| PDNP     |    2 | -1073741824 |  31 | M                        |-------------|
+| ELRC     |    1 |    62000000 |  22 | M                        |-------------|
+| GEODU    |    2 |      -15000 |  15 | M                        |-------------|
+| TMDBST   |    1 |           0 |  12 | DEGREES KELVIN           |-------------|
+| SPFH     |    5 |           0 |  14 | KG/KG                    |-------------|
+| ARFR     |    3 |           0 |  19 | N-UNITS                  |-------------|
+| BNDA     |    8 |     -100000 |  23 | RAD                      |-------------|
+| SWID     |    0 |           0 |  14 | NUMERIC                  |-------------|
+| PD00     |    2 | -1073741824 |  31 | M                        |-------------|
+| PD90     |    2 | -1073741824 |  31 | M                        |-------------|
+| PCCF     |    0 |           0 |   7 | %                        |-------------|
+| QFRO     |    0 |           0 |  16 | FLAG TABLE               |-------------|
+|          |      |             |     |                          |-------------|
+`------------------------------------------------------------------------------'
